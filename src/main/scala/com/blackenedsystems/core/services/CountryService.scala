@@ -4,8 +4,6 @@ import com.blackenedsystems.core.dao.CountryDaoComponent
 import com.blackenedsystems.core.Country
 
 import grizzled.slf4j._
-import com.mongodb.casbah.commons.MongoDBObject
-
 
 /**
  * @author Alan Tibbetts
@@ -18,9 +16,7 @@ trait CountryServiceComponent { this: CountryDaoComponent =>
 
   class CountryService extends Logging {
 
-    def create(country: Country) = countryDao.create(country)
-
-    def update(country: Country) = countryDao.update(country)
+    def save(country: Country) = countryDao.save(country)
 
     def findByIsoCode2(isoCode2: String) = countryDao.findByIsoCode2(isoCode2)
   }

@@ -17,8 +17,8 @@ class CountryTest extends JUnitSuite {
     assertEquals("GBR", country.isoCode3)
     assertEquals("826", country.isoCodeNumeric)
     assertEquals(999, country.displayOrder)
-    assertNotNull(country.getDefaultName())
-    assertEquals("United Kingdom", country.getDefaultName())
+    assertNotNull(country.defaultName)
+    assertEquals("United Kingdom", country.defaultName)
   }
 
   @Test def update_displayOrder() {
@@ -30,8 +30,8 @@ class CountryTest extends JUnitSuite {
 
   @Test def defaultName_ok() {
     val country = new Country("GB", "GBR", "826", "United Kingdom")
-    assertNotNull(country.getDefaultName())
-    assertEquals("United Kingdom", country.getDefaultName())
+    assertNotNull(country.defaultName)
+    assertEquals("United Kingdom", country.defaultName)
   }
 
   @Test def getName_german_falls_back_to_default_language() {
@@ -77,7 +77,7 @@ class CountryTest extends JUnitSuite {
   @Test def getLanguageList_names() {
     val country = new Country("DE", "DEU", "276", "Germany")
     country.addName("de", "Deutschland")
-    val ll = country.getNameLanguages()
+    val ll = country.nameLanguages
     assertNotNull("Should return an empty list, never null", ll)
     assertEquals("Names added for en and de", 2, ll.size)
   }
@@ -85,7 +85,7 @@ class CountryTest extends JUnitSuite {
   @Test def getLanguageList_shortNames_empty() {
     val country = new Country("DE", "DEU", "276", "Germany")
     country.addName("de", "Deutschland")
-    val ll = country.getShortNameLanguages()
+    val ll = country.shortNameLanguages
     assertNotNull("Should return an empty list, never null", ll)
     assertEquals("No short names added", 0, ll.size)
   }
@@ -94,20 +94,20 @@ class CountryTest extends JUnitSuite {
     val country = new Country("DE", "DEU", "276", "Germany")
     country.addName("de", "Deutschland")
     country.addShortName("UK")
-    val ll = country.getShortNameLanguages()
+    val ll = country.shortNameLanguages
     assertNotNull("Should return an empty list, never null", ll)
     assertEquals("Only 'UK' short name added", 1, ll.size)
   }
 
   @Test def constructor_long_name_trimmed() {
     val country = new Country("CC", "CCC", "123", "CountryWithAStupidlyLongNameOrToPutItAnotherWayACompletelyUnreasonableName")
-    assertEquals("Name should have been trimmed to 50 chars(ish)", "CountryWithAStupidlyLongNameOrToPutItAnotherWa...", country.getDefaultName)
+    assertEquals("Name should have been trimmed to 50 chars(ish)", "CountryWithAStupidlyLongNameOrToPutItAnotherWa...", country.defaultName)
   }
 
   @Test def addName_long_name_trimmed() {
     val country = new Country("CC", "CCC", "123", "Country")
     country.addName("CountryWithAStupidlyLongNameOrToPutItAnotherWayACompletelyUnreasonableName")
-    assertEquals("Name should have been trimmed to 50 chars(ish)", "CountryWithAStupidlyLongNameOrToPutItAnotherWa...", country.getDefaultName)
+    assertEquals("Name should have been trimmed to 50 chars(ish)", "CountryWithAStupidlyLongNameOrToPutItAnotherWa...", country.defaultName)
   }
 
   @Test def addShortName_long_shortname_trimmed() {

@@ -1,6 +1,11 @@
 package com.blackenedsystems.core
 
+import com.mongodb.casbah.commons.MongoDBObject
+import com.mongodb.DBObject
+
 /**
+ * Provides a mechanism for the internationalisation of names associated with an object.
+ *
  * @author Alan Tibbetts
  * @since 23/3/11 12:13 PM
  */
@@ -22,13 +27,13 @@ class Names(val languageCode: String) {
 
   def name = _name
 
-  def name_=(name: String) = {
+  def name_=(name: String) {
     _name = validateName(name)
   }
 
   def shortName = _shortName
 
-  def shortName_=(shortName: String) = {
+  def shortName_=(shortName: String) {
     _shortName = validateShortName(shortName)
   }
 
@@ -52,6 +57,14 @@ class Names(val languageCode: String) {
           case false => shortName.substring(0, Names.MaxShortNameLength - 4) + "..."
         }
     }
+  }
+
+  def asDBObject: DBObject = {
+    val builder = MongoDBObject.newBuilder
+    builder += "lc" -> languageCode
+    builder += "name" -> name
+    builder += "shortName" -> shortName
+    builder.result()
   }
 }
 

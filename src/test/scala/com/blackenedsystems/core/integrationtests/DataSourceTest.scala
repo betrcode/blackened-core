@@ -1,6 +1,6 @@
 package com.blackenedsystems.core.integrationtests
 
-import com.blackenedsystems.core.mongodb.DataSource
+import com.blackenedsystems.core.mongodb.AuthenticatedDataSource
 import org.scalatest.junit.JUnitSuite
 import org.junit.Test
 import org.junit.Assert._
@@ -17,13 +17,13 @@ import com.mongodb.casbah.commons.MongoDBObject
 class DataSourceTest extends JUnitSuite {
 
   @Test def connection_ok() {
-    val dataSource = new DataSource("localhost", 27017, "blackened-test", "blackened", "testpassword")
+    val dataSource = new AuthenticatedDataSource("localhost", 27017, "blackened-core-test", "blackened", "testpassword")
   }
 
   @Test
   def connection_fails_authentication() {
     try {
-      val dataSource = new DataSource("localhost", 27017, "blackened-test", "blackened", "wrong")
+      val dataSource = new AuthenticatedDataSource("localhost", 27017, "blackened-core-test", "blackened", "wrong")
       fail("Should have thrown an exception")
     } catch {
       case ex: Exception => println("okay dokey")
@@ -31,7 +31,7 @@ class DataSourceTest extends JUnitSuite {
   }
 
   @Test def executeQuery_ok() {
-    val dataSource = new DataSource("localhost", 27017, "blackened-test", "blackened", "testpassword")
+    val dataSource = new AuthenticatedDataSource("localhost", 27017, "blackened-core-test", "blackened", "testpassword")
 
     val q = MongoDBObject("username" -> "junit")
     val user = dataSource.getCollection("JunitUser").findOne(q)

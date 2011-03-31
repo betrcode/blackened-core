@@ -5,8 +5,13 @@ import scala.collection.immutable.List
 
 import org.joda.time.DateTime
 import org.joda.time.DateTimeZone
+import com.mongodb.casbah.commons.{MongoDBList, MongoDBObjectBuilder, MongoDBObject}
+import com.mongodb.{BasicDBList, BasicDBObject}
+import collection.JavaConversions._
 
 /**
+ * Models core properties that are applicable to all other objects within the system.
+ *
  * @author Alan Tibbetts
  * @since 23/3/11 11:07 AM
  */
@@ -14,10 +19,10 @@ import org.joda.time.DateTimeZone
 abstract class CoreObject {
 
   var displayOrder = 999
-  var updateTime = new DateTime(DateTimeZone.UTC)
+  var updateTime: DateTime = new DateTime(DateTimeZone.UTC)
   var names = Map[String, Names]()
 
-  def getDefaultName(): String = {
+  def defaultName: String = {
     names.get(CoreObject.DefaultLanguage) match {
       case Some(x) => x.name
       case None => ""
@@ -25,7 +30,7 @@ abstract class CoreObject {
   }
 
   def getName(languageCode: String): String = {
-    val lc = languageCode.toLowerCase()
+    val lc = languageCode.toLowerCase
     findNames(lc, CoreObject.CheckDefaultLanguage) match {
       case Some(x) => x.name
       case None => ""
@@ -36,7 +41,7 @@ abstract class CoreObject {
    * Adds a name using the default language. If a name already exists for the language, it
    * will be overwritten.
    */
-  def addName(name: String): Unit = {
+  def addName(name: String) {
     addName(CoreObject.DefaultLanguage, name)
   }
 
@@ -46,16 +51,16 @@ abstract class CoreObject {
    *
    * Null or empty names will be ignored
    */
-  def addName(languageCode: String, name: String): Unit = {
-    val lc = languageCode.toLowerCase()
-    if (name != null && !name.isEmpty()) {
+  def addName(languageCode: String, name: String) {
+    val lc = languageCode.toLowerCase
+    if (name != null && !name.isEmpty) {
       val n = findOrCreateNames(lc)
       n.name = name
     }
   }
 
   def getShortName(languageCode: String): String = {
-    val lc = languageCode.toLowerCase()
+    val lc = languageCode.toLowerCase
     findNames(lc, !CoreObject.CheckDefaultLanguage) match {
       case Some(x) => matchShortName(lc, x)
       case None => if (lc == CoreObject.DefaultLanguage) "" else getShortName(CoreObject.DefaultLanguage)
@@ -88,12 +93,12 @@ abstract class CoreObject {
    *
    * If the name for the language we are using is null or empty, it will be set to the given short name.
    */
-  def addShortName(languageCode: String, shortName: String): Unit = {
-    val lc = languageCode.toLowerCase()
-    if (shortName != null && !shortName.isEmpty()) {
+  def addShortName(languageCode: String, shortName: String) {
+    val lc = languageCode.toLowerCase
+    if (shortName != null && !shortName.isEmpty) {
       val n = findOrCreateNames(lc)
       n.shortName = shortName
-      if (n.name == null || n.name.isEmpty()) {
+      if (n.name == null || n.name.isEmpty) {
         n.name = shortName
       }
     }
@@ -131,12 +136,12 @@ abstract class CoreObject {
   /**
    * Returns a list of language codes for which we have valid names.
    */
-  def getNameLanguages(): List[String] = {
+  def nameLanguages: List[String] = {
     var languageList = List[String]()
     names.foreach{
       elem =>
         val name = elem._2
-        if (name.name != null && !name.name.isEmpty()) {
+        if (name.name != null && !name.name.isEmpty) {
           languageList = name.languageCode :: languageList
         }
     }
@@ -146,16 +151,49 @@ abstract class CoreObject {
   /**
    * Returns a list of language codes for which we have valid short names.
    */
-  def getShortNameLanguages(): List[String] = {
+  def shortNameLanguages: List[String] = {
     var languageList = List[String]()
     names.foreach{
       elem =>
         val name = elem._2
-        if (name.shortName != null && !name.shortName.isEmpty()) {
+        if (name.shortName != null && !name.shortName.isEmpty) {
           languageList = name.languageCode :: languageList
         }
     }
     languageList
+  }
+
+  /**
+   * Adds the various CoreObject properties to the given (Mongo)DBObjectBuilder.
+   */
+  def addCoreProperties(builder: MongoDBObjectBuilder) = {
+    builder += "dispOrd" -> displayOrder
+    builder += "updTime" -> updateTime
+
+    val listBuilder = MongoDBList.newBuilder
+    names.foreach{elem =>
+            val n = elem._2
+            listBuilder += n.asDBObject
+    }
+
+    builder += "names" -> listBuilder.result()
+  }
+
+  /**
+   * Extracts the various CoreObject properties from the given (Mongo)BasicDBObject.
+   */
+  def addCoreProperties(dbObject: BasicDBObject) {
+
+    displayOrder = dbObject.getInt("dispOrd")
+    updateTime = dbObject.get("updTime").asInstanceOf[DateTime]
+
+    val names = dbObject.get("names").asInstanceOf[BasicDBList]
+    names.foreach(dbObject => {
+      val dbObj = dbObject.asInstanceOf[BasicDBObject]
+      val name = new Names(dbObj.getString("lc"), dbObj.getString("name"), dbObj.getString("shortName"))
+      addName(name.languageCode, name.name)
+      addShortName(name.languageCode, name.shortName)
+    })
   }
 }
 

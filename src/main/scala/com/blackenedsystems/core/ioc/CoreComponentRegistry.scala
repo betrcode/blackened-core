@@ -1,7 +1,5 @@
 package com.blackenedsystems.core.ioc
 
-import scala.collection.immutable.Map
-
 import com.blackenedsystems.core.dao._
 import com.blackenedsystems.core.services._
 import com.blackenedsystems.core.mongodb._
@@ -12,7 +10,7 @@ import com.blackenedsystems.core.mongodb._
  */
 object CoreComponentRegistry extends CountryServiceComponent with CountryDaoComponent {
 
-  val dataSource = new DataSource ("localhost", 27017, "blackened-test", "blackened", "testpassword")
+  val dataSource = new AuthenticatedDataSource ("localhost", 27017, "blackened-core-dev", "blackened", "devpassword")
 
   val countryDao = new CountryDao(dataSource)
   val countryService = new CountryService

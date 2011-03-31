@@ -1,14 +1,10 @@
 package com.blackenedsystems.core.integrationtests
 
 import com.blackenedsystems.core.ioc.CoreComponentRegistry
-import com.blackenedsystems.core.mongodb.DataSource
-
 import org.scalatest.junit.JUnitSuite
 
 import org.junit.Test
 import org.junit.Assert._
-
-import com.mongodb.casbah.commons.MongoDBObject
 
 import grizzled.slf4j._
 
@@ -24,10 +20,7 @@ class CoreComponentRegistryTest extends JUnitSuite with Logging {
     val countryService = CoreComponentRegistry.countryService
 
     val country = countryService.findByIsoCode2("11")
-    country match {
-      case Some(x) => fail("Country QQ, should not exist")
-      case None => info("Correct, there is no country with IsoCode2 = 11")
-    }
+    assertNotNull(country)
   }
 
 }

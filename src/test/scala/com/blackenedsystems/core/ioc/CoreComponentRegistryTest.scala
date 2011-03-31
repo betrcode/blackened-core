@@ -16,7 +16,7 @@ class CoreComponentRegistryTest extends JUnitSuite {
   @Test def countryService_ok() {
     val countryService = CoreComponentRegistry.countryService
     assertNotNull(countryService)
-    countryService.create(null)
+    countryService.save(null)
   }
 
 }
