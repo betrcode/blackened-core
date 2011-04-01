@@ -19,6 +19,10 @@ trait CountryServiceComponent { this: CountryDaoComponent =>
     def save(country: Country) = countryDao.save(country)
 
     def findByIsoCode2(isoCode2: String) = countryDao.findByIsoCode2(isoCode2)
+
+    def find(id: String) = countryDao.find(id)
+
+    def findAll() = countryDao.findAll()
   }
 
 }

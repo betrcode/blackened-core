@@ -34,8 +34,36 @@ class CountryServiceTest extends JUnitSuite with Logging {
     validateUK(uk)
   }
 
+  @Test def insert_sweden_ok() {
+    val country = new Country("SE", "SWE", "123", "Sweden")
+    countryService.save(country)
+    assertNotNull("ID should have been set during persistence", country.id)
+
+    val sweden = countryService.find(country.id)
+    assertEquals("Original and retrieved Sweden should be the same", country, sweden)
+
+    val allCountries = countryService.findAll()
+    assertEquals("Should be two countries now", 2, allCountries.size)
+  }
+
+  @Test def update_uk_ok() {
+    var allCountries = countryService.findAll()
+    assertEquals("Should only be one country", 1, allCountries.size)
+
+    val uk = countryService.findByIsoCode2("GB")
+    uk.addName("FR", "Royaume-Uni")
+    val savedUK = countryService.save(uk)
+    assertEquals("IDs should be the same", uk.id, savedUK.id)
+    assertEquals("Names should be in English, Swedish and French", 3, savedUK.nameLanguages.size)
+
+    allCountries = countryService.findAll()
+    assertEquals("Should still only be one country", 1, allCountries.size)
+  }
+
+
   private def validateUK(uk: Country) {
     assertNotNull("UK should have been added by the setUp process", uk)
+    assertNotNull("ID should have been set by Mongo", uk.id)
     assertEquals("Invalid isocode3", "GBR", uk.isoCode3)
     assertEquals("Invalid numeric isocode", "826", uk.isoCodeNumeric)
     assertEquals("Default name incorrect", "United Kingdom", uk.defaultName)

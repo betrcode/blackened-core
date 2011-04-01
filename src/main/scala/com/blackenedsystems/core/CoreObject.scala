@@ -5,7 +5,7 @@ import scala.collection.immutable.List
 
 import org.joda.time.DateTime
 import org.joda.time.DateTimeZone
-import com.mongodb.casbah.commons.{MongoDBList, MongoDBObjectBuilder, MongoDBObject}
+import com.mongodb.casbah.commons.{MongoDBList, MongoDBObjectBuilder}
 import com.mongodb.{BasicDBList, BasicDBObject}
 import collection.JavaConversions._
 
@@ -22,6 +22,10 @@ abstract class CoreObject {
   var updateTime: DateTime = new DateTime(DateTimeZone.UTC)
   var names = Map[String, Names]()
 
+  /**
+   * Returns the name of this object in the default language, or an empty string if
+   * it does not exist.
+   */
   def defaultName: String = {
     names.get(CoreObject.DefaultLanguage) match {
       case Some(x) => x.name
@@ -29,6 +33,10 @@ abstract class CoreObject {
     }
   }
 
+  /**
+   * Returns the name of this object in the required language, or the default language if
+   * the translation for the requested language does not exist.
+   */
   def getName(languageCode: String): String = {
     val lc = languageCode.toLowerCase
     findNames(lc, CoreObject.CheckDefaultLanguage) match {
@@ -138,7 +146,7 @@ abstract class CoreObject {
    */
   def nameLanguages: List[String] = {
     var languageList = List[String]()
-    names.foreach{
+    names.foreach {
       elem =>
         val name = elem._2
         if (name.name != null && !name.name.isEmpty) {
@@ -153,7 +161,7 @@ abstract class CoreObject {
    */
   def shortNameLanguages: List[String] = {
     var languageList = List[String]()
-    names.foreach{
+    names.foreach {
       elem =>
         val name = elem._2
         if (name.shortName != null && !name.shortName.isEmpty) {
@@ -171,9 +179,10 @@ abstract class CoreObject {
     builder += "updTime" -> updateTime
 
     val listBuilder = MongoDBList.newBuilder
-    names.foreach{elem =>
-            val n = elem._2
-            listBuilder += n.asDBObject
+    names.foreach {
+      elem =>
+        val n = elem._2
+        listBuilder += n.asDBObject
     }
 
     builder += "names" -> listBuilder.result()
