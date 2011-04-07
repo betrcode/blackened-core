@@ -1,0 +1,18 @@
+blackened-core
+
+
+Langauge: Scala
+Build Tool: maven
+
+
+Overview
+--------
+Provides core functionality for various projects implemented by Blackened Systems.
+
+
+MongoDB
+-------
+As of early 2011, Blackened Systems decided to use MongoDB as their primary datastore.  Consequently, the
+code within this project has been written against that database.  Casbah was chosen as the library to facilitate
+communication between the Scala layer and MongoDB.
+
