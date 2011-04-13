@@ -1,14 +1,11 @@
-blackened-core
-
-
-Langauge: Scala
-Build Tool: maven
-
-
 Overview
 --------
 Provides core functionality for various projects implemented by Blackened Systems.
 
+This project is open source, see the file: 'LICENSE' for terms and conditions.
+
+Langauge: Scala
+Build Tool: maven
 
 MongoDB
 -------
