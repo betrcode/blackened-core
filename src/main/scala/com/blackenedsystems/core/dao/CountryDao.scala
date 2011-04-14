@@ -51,21 +51,21 @@ trait CountryDaoComponent {
       country
     }
 
-    def findByIsoCode2(isoCode2: String): Country = {
+    def findByIsoCode2(isoCode2: String): Option[Country] = {
       val collection = dataSource.getCollection(CountryDao.collectionName)
       val dbObj = collection.findOne(MongoDBObject("iso2" -> isoCode2.toUpperCase))
       dbObj match {
-        case Some(d) => Country(d.asInstanceOf[BasicDBObject])
-        case None => null
+        case Some(d) => Some(Country(d.asInstanceOf[BasicDBObject]))
+        case None => None
       }
     }
 
-    def find(id: String): Country = {
+    def find(id: String): Option[Country] = {
       val collection = dataSource.getCollection(CountryDao.collectionName)
       val dbObj = collection.findOne(MongoDBObject("_id" -> new ObjectId(id)))
       dbObj match {
-        case Some(d) => Country(d.asInstanceOf[BasicDBObject])
-        case None => null
+        case Some(d) => Some(Country(d.asInstanceOf[BasicDBObject]))
+        case None => None
       }
     }
 

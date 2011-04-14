@@ -36,7 +36,10 @@ class CoreComponentRegistryTest extends JUnitSuite with Logging {
     val countryService = CoreComponentRegistry.countryService
 
     val country = countryService.findByIsoCode2("11")
-    assertNotNull(country)
+    country match {
+      case Some(c) => fail("Should not have found a country")
+      case None => // Do Nothing
+    }
   }
 
 }

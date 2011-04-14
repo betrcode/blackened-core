@@ -56,7 +56,10 @@ class CountryServiceTest extends JUnitSuite with Logging {
     assertNotNull("ID should have been set during persistence", country.id)
 
     val sweden = countryService.find(country.id)
-    assertEquals("Original and retrieved Sweden should be the same", country, sweden)
+    sweden match {
+      case Some(sw) => assertEquals("Original and retrieved Sweden should be the same", country, sw)
+      case None => fail("Could not find country (SE)")
+    }
 
     val allCountries = countryService.findAll()
     assertEquals("Should be two countries now", 2, allCountries.size)
@@ -66,28 +69,39 @@ class CountryServiceTest extends JUnitSuite with Logging {
     var allCountries = countryService.findAll()
     assertEquals("Should only be one country", 1, allCountries.size)
 
-    val uk = countryService.findByIsoCode2("GB")
-    uk.addName("FR", "Royaume-Uni")
-    val savedUK = countryService.save(uk)
-    assertEquals("IDs should be the same", uk.id, savedUK.id)
-    assertEquals("Names should be in English, Swedish and French", 3, savedUK.nameLanguages.size)
+    val country = countryService.findByIsoCode2("GB")
+    country match {
+      case Some(uk) =>
+        uk.addName("FR", "Royaume-Uni")
+        val savedUK = countryService.save(uk)
+        assertEquals("IDs should be the same", uk.id, savedUK.id)
+        assertEquals("Names should be in English, Swedish and French", 3, savedUK.nameLanguages.size)
+
+      case None => fail("Could not find country (GB)")
+    }
 
     allCountries = countryService.findAll()
     assertEquals("Should still only be one country", 1, allCountries.size)
   }
 
 
-  private def validateUK(uk: Country) {
-    assertNotNull("UK should have been added by the setUp process", uk)
-    assertNotNull("ID should have been set by Mongo", uk.id)
-    assertEquals("Invalid isocode3", "GBR", uk.isoCode3)
-    assertEquals("Invalid numeric isocode", "826", uk.isoCodeNumeric)
-    assertEquals("Default name incorrect", "United Kingdom", uk.defaultName)
-    assertEquals("Names should be in English and Swedish", 2, uk.nameLanguages.size)
-    assertEquals("English Translation", "United Kingdom", uk.getName("en"))
-    assertEquals("Swedish Translation", "Storbritannien", uk.getName("se"))
-    assertEquals("German Translation returns English (default)", "United Kingdom", uk.getName("de"))
-    assertEquals("Default display order", 999, uk.displayOrder)
-    assertTrue("Created before now", uk.updateTime.isBeforeNow)
+  private def validateUK(country: Option[Country]) {
+    country match {
+      case Some(uk) =>
+        assertNotNull("UK should have been added by the setUp process", uk)
+        assertNotNull("ID should have been set by Mongo", uk.id)
+        assertEquals("Invalid isocode3", "GBR", uk.isoCode3)
+        assertEquals("Invalid numeric isocode", "826", uk.isoCodeNumeric)
+        assertEquals("Default name incorrect", "United Kingdom", uk.defaultName)
+        assertEquals("Names should be in English and Swedish", 2, uk.nameLanguages.size)
+        assertEquals("English Translation", "United Kingdom", uk.getName("en"))
+        assertEquals("Swedish Translation", "Storbritannien", uk.getName("se"))
+        assertEquals("German Translation returns English (default)", "United Kingdom", uk.getName("de"))
+        assertEquals("Default display order", 999, uk.displayOrder)
+        assertTrue("Created before now", uk.updateTime.isBeforeNow)
+
+      case None => fail("Did not find country (GB)")
+    }
+
   }
 }
