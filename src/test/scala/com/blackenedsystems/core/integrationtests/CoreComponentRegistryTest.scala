@@ -20,8 +20,6 @@ import com.blackenedsystems.core.ioc.CoreComponentRegistry
 import org.scalatest.junit.JUnitSuite
 
 import org.junit.Test
-import org.junit.Assert._
-
 import grizzled.slf4j._
 
 /**
