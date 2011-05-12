@@ -26,6 +26,7 @@ import com.blackenedsystems.core.mongodb._
  */
 object CoreComponentRegistry extends CountryServiceComponent with CountryDaoComponent {
 
+  //TODO: how to replicate Spring's propertyplaceholder?  Then I can remove this hard-coded nonsense.
   val dataSource = new AuthenticatedDataSource ("localhost", 27017, "blackened-core-dev", "blackened", "devpassword")
 
   val countryDao = new CountryDao(dataSource)
