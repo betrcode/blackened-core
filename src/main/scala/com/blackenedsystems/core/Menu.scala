@@ -36,6 +36,10 @@ class Menu(val key: String, defaultName: String) extends CoreObject {
 
   addName(CoreObject.DefaultLanguage, defaultName)
 
+  def this(id: String, k: String, dn: String) {
+    this (k, dn)
+    _id = id
+  }
 
   def id = _id
 
@@ -80,4 +84,13 @@ class Menu(val key: String, defaultName: String) extends CoreObject {
 
   override def hashCode: Int =
     41 * (41 + key.hashCode)
+}
+
+object Menu {
+
+  def apply(dbObject: BasicDBObject): Menu = {
+    val menu = new Menu(dbObject.getString(""), dbObject.getString("key"), "")
+    menu.addCoreProperties(dbObject)
+    menu
+  }
 }

@@ -14,33 +14,15 @@
  * limitations under the License.
  */
 
-package com.blackenedsystems.core.services
-
-import com.blackenedsystems.core.dao.CountryDaoComponent
-import com.blackenedsystems.core.Country
-
-import grizzled.slf4j._
+package com.blackenedsystems.core.dao
 
 /**
  * @author Alan Tibbetts
- * @since 28/3/11 3:42 PM
+ * @since 18/5/11 5:33 PM
  */
 
-trait CountryServiceComponent { this: CountryDaoComponent =>
+trait MongoDbDao {
 
-  val countryService: CountryService
-
-  class CountryService extends Logging {
-
-    def collectionName: String = countryDao.collectionName
-
-    def save(country: Country) = countryDao.save(country)
-
-    def findByIsoCode2(isoCode2: String) = countryDao.findByIsoCode2(isoCode2)
-
-    def find(id: String) = countryDao.find(id)
-
-    def findAll() = countryDao.findAll()
-  }
+  def collectionName: String
 
 }

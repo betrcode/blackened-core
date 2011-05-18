@@ -24,7 +24,7 @@ import com.mongodb.casbah.commons.MongoDBObject
 
 
 /**
- * Integration tests that ensure the MongoDB datasource does what is exepected of it.
+ * Integration tests that ensure the MongoDB data source does what is expected of it.
  *
  * @author Alan Tibbetts
  * @since 24/3/11 11:26 AM
@@ -42,7 +42,7 @@ class DataSourceTest extends JUnitSuite {
       val dataSource = new AuthenticatedDataSource("localhost", 27017, "blackened-core-test", "blackened", "wrong")
       fail("Should have thrown an exception")
     } catch {
-      case ex: Exception => println("okay dokey")
+      case ex: Exception => // Do Nothing
     }
   }
 

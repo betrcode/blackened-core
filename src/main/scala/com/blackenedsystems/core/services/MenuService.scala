@@ -16,31 +16,29 @@
 
 package com.blackenedsystems.core.services
 
-import com.blackenedsystems.core.dao.CountryDaoComponent
-import com.blackenedsystems.core.Country
-
+import com.blackenedsystems.core.dao.MenuDaoComponent
 import grizzled.slf4j._
+import com.blackenedsystems.core.Menu
 
 /**
  * @author Alan Tibbetts
- * @since 28/3/11 3:42 PM
+ * @since 18/5/11 4:29 PM
  */
 
-trait CountryServiceComponent { this: CountryDaoComponent =>
+trait MenuServiceComponent { this: MenuDaoComponent =>
 
-  val countryService: CountryService
+  val menuService: MenuService
 
-  class CountryService extends Logging {
+  class MenuService extends Logging {
+    def collectionName = menuDao.collectionName
 
-    def collectionName: String = countryDao.collectionName
+    def find(id: String) = menuDao.find(id)
 
-    def save(country: Country) = countryDao.save(country)
+    def findByKey(key: String)  = menuDao.findByKey(key)
 
-    def findByIsoCode2(isoCode2: String) = countryDao.findByIsoCode2(isoCode2)
+    def save(menu: Menu) = menuDao.save(menu)
 
-    def find(id: String) = countryDao.find(id)
-
-    def findAll() = countryDao.findAll()
   }
 
 }
+

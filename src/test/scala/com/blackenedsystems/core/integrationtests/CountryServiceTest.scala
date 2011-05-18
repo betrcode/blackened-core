@@ -24,6 +24,8 @@ import com.blackenedsystems.core.Country
 import org.junit.{Before, Test}
 
 /**
+ * Integration tests for the <code>CountryService</code>.
+ *
  * @author Alan Tibbetts
  * @since 31/3/11 12:46 PM
  */
@@ -33,7 +35,7 @@ class CountryServiceTest extends JUnitSuite with Logging {
   val countryService = CoreComponentRegistry.countryService
 
   @Before def setUp() {
-    CoreComponentRegistry.dataSource.removeCollection("Country")
+    CoreComponentRegistry.dataSource.removeCollection(countryService.collectionName)
 
     val country = new Country("GB", "GBR", "826", "United Kingdom")
     country.addName("se", "Storbritannien")

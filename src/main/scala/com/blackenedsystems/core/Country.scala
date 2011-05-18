@@ -78,11 +78,8 @@ class Country(val isoCode2: String, val isoCode3: String, val isoCodeNumeric: St
 object Country {
 
   def apply(dbObject: BasicDBObject): Country = {
-
     val country = new Country(dbObject.getString("_id"), dbObject.getString("iso2"), dbObject.getString("iso3"), dbObject.getString("isoNum"), "")
     country.addCoreProperties(dbObject)
-
     country
-
   }
 }

@@ -21,14 +21,25 @@ import com.blackenedsystems.core.services._
 import com.blackenedsystems.core.mongodb._
 
 /**
+ * DependencyInjection/IoC using the 'cake pattern' as detailed in the article by Jonas Boner:
+ * http://jonasboner.com/2008/10/06/real-world-scala-dependency-injection-di.html
+ *
  * @author Alan Tibbetts
  * @since 24/3/11 11:00 AM
  */
-object CoreComponentRegistry extends CountryServiceComponent with CountryDaoComponent {
+object CoreComponentRegistry
+        extends CountryServiceComponent
+        with CountryDaoComponent
+        with MenuServiceComponent
+        with MenuDaoComponent
+{
 
   //TODO: how to replicate Spring's propertyplaceholder?  Then I can remove this hard-coded nonsense.
   val dataSource = new AuthenticatedDataSource ("localhost", 27017, "blackened-core-dev", "blackened", "devpassword")
 
   val countryDao = new CountryDao(dataSource)
   val countryService = new CountryService
+
+  val menuDao = new MenuDao(dataSource)
+  val menuService = new MenuService
 }

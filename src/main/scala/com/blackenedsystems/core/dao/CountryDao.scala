@@ -34,13 +34,15 @@ trait CountryDaoComponent {
 
   val countryDao: CountryDao
 
-  class CountryDao(dataSource: AuthenticatedDataSource) extends Logging {
+  class CountryDao(dataSource: AuthenticatedDataSource) extends MongoDbDao with Logging {
+
+    val collectionName = "country"
 
     /**
      * Inserts (where _id is null) or Updates the given Country object
      */
     def save(country: Country): Country = {
-      val collection = dataSource.getCollection(CountryDao.collectionName)
+      val collection = dataSource.getCollection(collectionName)
       val countryDBObject: DBObject = country.asDBObject
       if (country.id == null) {
         val wr = collection.save(countryDBObject)
@@ -52,7 +54,7 @@ trait CountryDaoComponent {
     }
 
     def findByIsoCode2(isoCode2: String): Option[Country] = {
-      val collection = dataSource.getCollection(CountryDao.collectionName)
+      val collection = dataSource.getCollection(collectionName)
       val dbObj = collection.findOne(MongoDBObject("iso2" -> isoCode2.toUpperCase))
       dbObj match {
         case Some(d) => Some(Country(d.asInstanceOf[BasicDBObject]))
@@ -61,7 +63,7 @@ trait CountryDaoComponent {
     }
 
     def find(id: String): Option[Country] = {
-      val collection = dataSource.getCollection(CountryDao.collectionName)
+      val collection = dataSource.getCollection(collectionName)
       val dbObj = collection.findOne(MongoDBObject("_id" -> new ObjectId(id)))
       dbObj match {
         case Some(d) => Some(Country(d.asInstanceOf[BasicDBObject]))
@@ -70,17 +72,13 @@ trait CountryDaoComponent {
     }
 
     def findAll(): Set[Country] = {
-      val collection = dataSource.getCollection(CountryDao.collectionName)
+      val collection = dataSource.getCollection(collectionName)
       var countries = Set[Country]()
       for( x <- collection.find()) {
         countries += Country(x.asInstanceOf[BasicDBObject])
       }
       countries
     }
-  }
-
-  object CountryDao {
-    val collectionName: String = "Country"
   }
 
 }
