@@ -13,20 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
+
 package com.blackenedsystems.core
 
-import com.mongodb.DBObject
-
-import scala.collection.immutable.Set
-import com.mongodb.casbah.commons.{MongoDBList, MongoDBObject}
+import scala.collection.JavaConversions._
+import scala.collection.immutable.{Set, Map}
+import com.mongodb.casbah.commons.MongoDBList
+import com.mongodb.{BasicDBList, BasicDBObject, DBObject}
 
 /**
  * @author Alan Tibbetts
  * @since 11/5/11 9:41 PM
  */
 
-class MenuItem (val key: String, defaultName: String) extends CoreObject {
+class MenuItem(val key: String, defaultName: String) extends CoreObject {
 
   var subItems = Set[MenuItem]()
 
@@ -40,21 +40,15 @@ class MenuItem (val key: String, defaultName: String) extends CoreObject {
    * Converts the current object to a (Mongo)DBObject.
    */
   def asDBObject: DBObject = {
-    val builder = MongoDBObject.newBuilder
-
-    builder += "key" -> key
-
-    val listBuilder = MongoDBList.newBuilder
+    val menuItemBuilder = MongoDBList.newBuilder
     subItems.foreach {
       subItem =>
-        listBuilder += subItem.asDBObject
+        menuItemBuilder += subItem.asDBObject
     }
 
-    builder += "subItems" -> listBuilder.result()
-
-    addCoreProperties(builder)
-
-    builder.result()
+    super.asDbObject(Map[String, Any](
+      "key" -> key,
+      "subItems" -> menuItemBuilder.result()))
   }
 
   def canEqual(other: Any): Boolean = other.isInstanceOf[MenuItem]
@@ -69,4 +63,17 @@ class MenuItem (val key: String, defaultName: String) extends CoreObject {
 
   override def hashCode: Int =
     41 * (41 + key.hashCode)
+}
+
+object MenuItem {
+
+  def apply(dbObject: BasicDBObject): MenuItem = {
+    val menuItem = new MenuItem(dbObject.getString("key"), "")
+    val subItems = dbObject.get("subItems").asInstanceOf[BasicDBList]
+    subItems.foreach { item =>
+      menuItem.addSubItem(MenuItem(item.asInstanceOf[BasicDBObject]))
+    }
+    menuItem.addCoreProperties(dbObject)
+    menuItem
+  }
 }

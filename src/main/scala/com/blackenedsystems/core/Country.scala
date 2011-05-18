@@ -17,8 +17,8 @@
 
 package com.blackenedsystems.core
 
-import com.mongodb.casbah.commons.MongoDBObject
 import com.mongodb._
+import scala.collection.immutable.Map
 
 /**
  * Models a physical country, as defined by its various isocodes.
@@ -40,7 +40,7 @@ class Country(val isoCode2: String, val isoCode3: String, val isoCodeNumeric: St
 
   def id = _id
 
-  def id_= (id: String) {
+  def id_=(id: String) {
     _id = id
   }
 
@@ -50,7 +50,7 @@ class Country(val isoCode2: String, val isoCode3: String, val isoCodeNumeric: St
     other match {
       case that: Country =>
         (that canEqual this) &&
-        isoCode2 == that.isoCode2
+                isoCode2 == that.isoCode2
       case _ => false
     }
   }
@@ -63,14 +63,10 @@ class Country(val isoCode2: String, val isoCode3: String, val isoCodeNumeric: St
    * Converts the current object to a (Mongo)DBObject.
    */
   def asDBObject: DBObject = {
-    val builder = MongoDBObject.newBuilder
-    builder += "iso2" -> isoCode2.toUpperCase
-    builder += "iso3" -> isoCode3.toUpperCase
-    builder += "isoNum" -> isoCodeNumeric
-
-    addCoreProperties(builder)
-
-    builder.result()
+    super.asDbObject(Map[String, String](
+      "iso2" -> isoCode2.toUpperCase,
+      "iso3" -> isoCode3.toUpperCase,
+      "isoNum" -> isoCodeNumeric))
   }
 }
 

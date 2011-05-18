@@ -78,8 +78,8 @@ class Names(val languageCode: String) {
   def asDBObject: DBObject = {
     val builder = MongoDBObject.newBuilder
     builder += "lc" -> languageCode
-    builder += "name" -> name
-    builder += "shortName" -> shortName
+    builder += "n" -> name
+    builder += "sn" -> shortName
     builder.result()
   }
 }

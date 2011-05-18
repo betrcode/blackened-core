@@ -17,13 +17,14 @@
 package com.blackenedsystems.core
 
 import scala.collection.mutable.Map
+import scala.collection.immutable.{Map => ImmutableMap}
 import scala.collection.immutable.List
 
 import org.joda.time.DateTime
 import org.joda.time.DateTimeZone
-import com.mongodb.casbah.commons.{MongoDBList, MongoDBObjectBuilder}
-import com.mongodb.{BasicDBList, BasicDBObject}
 import collection.JavaConversions._
+import com.mongodb.{DBObject, BasicDBList, BasicDBObject}
+import com.mongodb.casbah.commons.{MongoDBObject, MongoDBList}
 
 /**
  * Models core properties that are applicable to all other objects within the system.
@@ -188,9 +189,33 @@ abstract class CoreObject {
   }
 
   /**
-   * Adds the various CoreObject properties to the given (Mongo)DBObjectBuilder.
+   * Extracts the various CoreObject properties from the given (Mongo)BasicDBObject.
    */
-  def addCoreProperties(builder: MongoDBObjectBuilder) = {
+  protected def addCoreProperties(dbObject: BasicDBObject) {
+
+    displayOrder = dbObject.getInt("dispOrd")
+    updateTime = dbObject.get("updTime").asInstanceOf[DateTime]
+
+    val names = dbObject.get("names").asInstanceOf[BasicDBList]
+    names.foreach(dbObject => {
+      val dbObj = dbObject.asInstanceOf[BasicDBObject]
+      val name = new Names(dbObj.getString("lc"), dbObj.getString("n"), dbObj.getString("sn"))
+      addName(name.languageCode, name.name)
+      addShortName(name.languageCode, name.shortName)
+    })
+  }
+
+  /**
+   * Constructs a MongoDBObject representation of this object.  Adds the <code>CoreObject</code>
+   * properties to the map of properties supplied.
+   */
+  protected def asDbObject(parentParameters: ImmutableMap[String, Any]): DBObject = {
+    val builder = MongoDBObject.newBuilder
+
+    parentParameters.foreach {
+      case (key, value) => builder += key -> value
+    }
+
     builder += "dispOrd" -> displayOrder
     builder += "updTime" -> updateTime
 
@@ -202,29 +227,14 @@ abstract class CoreObject {
     }
 
     builder += "names" -> listBuilder.result()
-  }
 
-  /**
-   * Extracts the various CoreObject properties from the given (Mongo)BasicDBObject.
-   */
-  def addCoreProperties(dbObject: BasicDBObject) {
-
-    displayOrder = dbObject.getInt("dispOrd")
-    updateTime = dbObject.get("updTime").asInstanceOf[DateTime]
-
-    val names = dbObject.get("names").asInstanceOf[BasicDBList]
-    names.foreach(dbObject => {
-      val dbObj = dbObject.asInstanceOf[BasicDBObject]
-      val name = new Names(dbObj.getString("lc"), dbObj.getString("name"), dbObj.getString("shortName"))
-      addName(name.languageCode, name.name)
-      addShortName(name.languageCode, name.shortName)
-    })
+    builder.result()
   }
 }
 
 
 object CoreObject {
 
-  val DefaultLanguage: String = "en"
+  val DefaultLanguage: String = "en"  // NB. Must be lower case!
   val CheckDefaultLanguage: Boolean = true
 }

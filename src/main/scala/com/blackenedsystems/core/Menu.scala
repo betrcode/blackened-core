@@ -16,10 +16,11 @@
 
 package com.blackenedsystems.core
 
-import com.mongodb._
+import scala.collection.JavaConversions._
+import scala.collection.immutable.Map
 
-import casbah.commons.{MongoDBList, MongoDBObject}
-import scala.collection.immutable.Set
+import com.mongodb._
+import com.mongodb.casbah.commons.MongoDBList
 
 /**
  * A single menu hierarchy.  Each menu can have a number of items.  These can in turn have sub-items, ad finitum.
@@ -32,7 +33,7 @@ class Menu(val key: String, defaultName: String) extends CoreObject {
 
   private var _id: String = _
 
-  var menuItems = Set[MenuItem]()
+  var menuItems = Map[String, MenuItem]()
 
   addName(CoreObject.DefaultLanguage, defaultName)
 
@@ -48,29 +49,31 @@ class Menu(val key: String, defaultName: String) extends CoreObject {
   }
 
   def addMenuItem(item: MenuItem) {
-    menuItems += item
+    menuItems += (item.key -> item)
+  }
+
+  def getMenuItem(key: String): Option[MenuItem] = {
+    if (menuItems.contains(key)) {
+      Some(menuItems(key))
+    } else {
+      None
+    }
   }
 
   /**
    * Converts the current object to a (Mongo)DBObject.
    */
   def asDBObject: DBObject = {
-    val builder = MongoDBObject.newBuilder
-
-    builder += "key" -> key
-
-    val listBuilder = MongoDBList.newBuilder
+    val menuItemBuilder = MongoDBList.newBuilder
     menuItems.foreach {
-      item =>
-        listBuilder += item.asDBObject
+      case (key, value) => menuItemBuilder += value.asDBObject
     }
 
-    builder += "menuItems" -> listBuilder.result()
-
-    addCoreProperties(builder)
-
-    builder.result()
+    super.asDbObject(Map[String, Any](
+      "key" -> key,
+      "menuItems" -> menuItemBuilder.result()))
   }
+
 
   def canEqual(other: Any): Boolean = other.isInstanceOf[Menu]
 
@@ -90,6 +93,11 @@ object Menu {
 
   def apply(dbObject: BasicDBObject): Menu = {
     val menu = new Menu(dbObject.getString(""), dbObject.getString("key"), "")
+    val menuItems = dbObject.get("menuItems").asInstanceOf[BasicDBList]
+    menuItems.foreach {
+      item =>
+        menu.addMenuItem(MenuItem(item.asInstanceOf[BasicDBObject]))
+    }
     menu.addCoreProperties(dbObject)
     menu
   }
