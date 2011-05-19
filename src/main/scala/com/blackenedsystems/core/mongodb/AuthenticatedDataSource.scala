@@ -27,18 +27,18 @@ import commons.MongoDBObject
  * @since 24/3/11 11:14 AM
  */
 
-class AuthenticatedDataSource(host: String, ip: Int, databaseName: String, userName: String, password: String) extends Logging {
+class AuthenticatedDataSource(host: String, port: Int, databaseName: String, userName: String, password: String) extends Logging {
 
   RegisterJodaTimeConversionHelpers()
 
-  val mongoConn = MongoConnection(host, ip)
+  val mongoConn = MongoConnection(host, port)
   val mongoDB = mongoConn(databaseName)
 
   if (!mongoDB.authenticate(userName, password)) {
     throw new Exception("Cannot authenticate.  Login failed.")
   }
 
-  info("Initialised dataSource: host: " + host + ", ip: " + ip + ", database: " + databaseName + ", user: " + userName)
+  info("Initialised dataSource: host: " + host + ", port: " + port + ", database: " + databaseName + ", user: " + userName)
 
   def getConnection = mongoDB
 

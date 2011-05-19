@@ -19,7 +19,6 @@ package com.blackenedsystems.core.integrationtests
 import grizzled.slf4j.Logging
 import org.scalatest.junit.JUnitSuite
 import org.junit.Assert._
-import com.blackenedsystems.core.ioc.CoreComponentRegistry
 import com.blackenedsystems.core.Country
 import org.junit.{Before, Test}
 
@@ -32,10 +31,10 @@ import org.junit.{Before, Test}
 
 class CountryServiceTest extends JUnitSuite with Logging {
 
-  val countryService = CoreComponentRegistry.countryService
+  val countryService = TestingComponentRegistry.countryService
 
   @Before def setUp() {
-    CoreComponentRegistry.dataSource.removeCollection(countryService.collectionName)
+    TestingComponentRegistry.dataSource.removeCollection(countryService.collectionName)
 
     val country = new Country("GB", "GBR", "826", "United Kingdom")
     country.addName("se", "Storbritannien")

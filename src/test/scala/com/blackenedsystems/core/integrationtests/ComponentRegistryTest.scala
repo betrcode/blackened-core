@@ -16,7 +16,6 @@
 
 package com.blackenedsystems.core.integrationtests
 
-import com.blackenedsystems.core.ioc.CoreComponentRegistry
 import org.scalatest.junit.JUnitSuite
 
 import org.junit.Test
@@ -31,21 +30,21 @@ import grizzled.slf4j._
  * @since 28/3/11 5:31 PM
  */
 
-class CoreComponentRegistryTest extends JUnitSuite with Logging {
+class ComponentRegistryTest extends JUnitSuite with Logging {
 
   val invalidMongoObjectId: String = "123412341234123412341234"
 
   @Test def definedObjects_country_related_ok() {
-    val countryService = CoreComponentRegistry.countryService
+    val countryService = TestingComponentRegistry.countryService
     assertNotNull(countryService)
 
-    val countryDao = CoreComponentRegistry.countryDao
+    val countryDao = TestingComponentRegistry.countryDao
     assertNotNull(countryDao)
   }
 
   @Test def executeQuery_countryService_ok() {
 
-    val countryService = CoreComponentRegistry.countryService
+    val countryService = TestingComponentRegistry.countryService
 
     val country = countryService.findByIsoCode2("11")
     country match {
@@ -55,15 +54,15 @@ class CoreComponentRegistryTest extends JUnitSuite with Logging {
   }
 
   @Test def definedObjects_menu_related_ok() {
-    val menuService = CoreComponentRegistry.menuService
+    val menuService = TestingComponentRegistry.menuService
     assertNotNull(menuService)
 
-    val menuDao = CoreComponentRegistry.menuDao
+    val menuDao = TestingComponentRegistry.menuDao
     assertNotNull(menuDao)
   }
 
   @Test def executeQuery_menuService_ok() {
-    val menuService = CoreComponentRegistry.menuService
+    val menuService = TestingComponentRegistry.menuService
 
     val menu = menuService.find(invalidMongoObjectId)
     menu match {

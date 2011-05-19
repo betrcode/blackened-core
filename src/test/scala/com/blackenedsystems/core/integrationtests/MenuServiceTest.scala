@@ -18,7 +18,6 @@ package com.blackenedsystems.core.integrationtests
 
 import org.scalatest.junit.JUnitSuite
 import grizzled.slf4j.Logging
-import com.blackenedsystems.core.ioc.CoreComponentRegistry
 import org.junit.{Test, Before}
 import org.junit.Assert._
 import com.blackenedsystems.core.{MenuItem, Menu}
@@ -30,11 +29,11 @@ import com.blackenedsystems.core.{MenuItem, Menu}
 
 class MenuServiceTest extends JUnitSuite with Logging {
 
-  val menuService = CoreComponentRegistry.menuService
+  val menuService = TestingComponentRegistry.menuService
   val homeMenuKey: String = "mnu-home"
 
   @Before def setUp() {
-    CoreComponentRegistry.dataSource.removeCollection(menuService.collectionName)
+    TestingComponentRegistry.dataSource.removeCollection(menuService.collectionName)
 
     val menu = new Menu(homeMenuKey, "Home")
     menu.addName("SE", "Hem")
