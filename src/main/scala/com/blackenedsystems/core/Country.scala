@@ -22,6 +22,11 @@ import scala.collection.immutable.Map
 
 /**
  * Models a physical country, as defined by its various isocodes.
+ * 
+ * @param iso2 ISO-alpha-2 Must be UPPERCASE or you will get a IllegalArgumentException
+ * @param iso3 ISO-alpha-3 Must be UPPERCASE or you will get a IllegalArgumentException
+ * @param isoNum The numeric form of the ISO code
+ * @param defName
  *
  * @author Alan Tibbetts
  * @since 22/3/11 5:26 PM
@@ -29,6 +34,8 @@ import scala.collection.immutable.Map
 
 class Country(val isoCode2: String, val isoCode3: String, val isoCodeNumeric: String, defaultName: String) extends CoreObject {
 
+  require(isoCode2.equals(isoCode2.toUpperCase))
+  require(isoCode3.equals(isoCode3.toUpperCase))  
   private var _id: String = _
 
   addName(CoreObject.DefaultLanguage, defaultName)

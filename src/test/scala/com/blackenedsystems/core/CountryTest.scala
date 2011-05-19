@@ -37,6 +37,24 @@ class CountryTest extends JUnitSuite {
     assertEquals("United Kingdom", country.defaultName)
   }
 
+  @Test def constructor_req_UPPERCASE_isocodes() {
+    var good = false
+    try {
+      val country = new Country("gb", "GBR", "826", "United Kingdom")
+    } catch {
+      case ex: IllegalArgumentException => good = true //We should get this        
+    }
+    assertTrue(good)
+
+    good = false
+    try {
+      val country = new Country("GB", "gbr", "826", "United Kingdom")
+    } catch {
+      case ex: IllegalArgumentException => good = true //We should get this again        
+    }
+    assertTrue(good)
+  }
+  
   @Test def update_displayOrder() {
     val country = new Country("GB", "GBR", "826", "United Kingdom")
     assertEquals(999, country.displayOrder)
