@@ -4,7 +4,7 @@ Provides core functionality for various projects implemented by Blackened System
 
 This project is open source, see the file: 'LICENSE' for terms and conditions.
 
-Langauge: Scala
+Language: Scala
 Build Tool: maven
 
 MongoDB
